@@ -1,4 +1,4 @@
-import { getCurrentTab, getSelectionText } from './utils'
+import { getCurrentTab } from './utils'
 import fmt, { FormatDefinition } from './formats'
 import { CreateLink } from './createlink'
 
@@ -12,7 +12,7 @@ export class PopupHandler {
   }
 
   async initializeMenuItems() {
-    document.addEventListener('mouseup', this.onMouseUp.bind(this), false);
+    document.addEventListener('click', this.onClick.bind(this), false);
 
     await fmt.load()
     const formats = fmt.getFormats()
@@ -22,8 +22,10 @@ export class PopupHandler {
   createListElement(id: string, text: string) {
     var e = document.createElement('li');
     e.setAttribute('class', "item");
-    e.setAttribute('id', id);
-    e.innerText = text;
+    var button = document.createElement('button');
+    button.setAttribute('id', id);
+    button.innerText = text;
+    e.appendChild(button);
     return e;
   }
 
@@ -39,7 +41,7 @@ export class PopupHandler {
     });
   }
 
-  onMouseUp(ev: Event) {
+  onClick(ev: Event) {
     getCurrentTab().then((tab: chrome.tabs.Tab) => {
       if (ev.target === null) {
         throw new Error("target is null")
@@ -58,17 +60,12 @@ export class PopupHandler {
       var formatIndex = Number(RegExp.$1);
 
       const def = fmt.format(formatIndex)
-      const response = await getSelectionText(tab.id)
-      let selectionText
-      if (response instanceof Object) {
-        selectionText = response.text
-      }
       const cl = new CreateLink()
       const link = await cl.formatInTab(def, {
-        selectionText,
+        selectionText: '',
         pageUrl: tab.url,
       }, tab)
-      cl.copyToClipboard(tab.id, link)
+      await navigator.clipboard.writeText(link);
       window.close();
     }
   }

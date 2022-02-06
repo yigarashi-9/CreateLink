@@ -23,11 +23,10 @@ export class Format {
       new Promise<FormatDefinition[]>(resolve => {
         chrome.storage.sync.get(formatsKey, (v) => {
           this.formats = (v[formatsKey] || [
-            { label: "Plain text", format: '%text% %url%' },
-            { label: "HTML", format: '<a href="%url%">%htmlEscapedText%</a>' },
-            { label: "markdown", format: '[%text_md%](%url%)' },
-            { label: "mediaWiki", format: '[%url% %text%]' },
-          ])
+            { label: "Decoded Url", format: '%decoded_url%' },
+            { label: "Scrapbox", format: '[%text% %decoded_url%]' },
+            { label: "Markdown", format: '[%text_md%](%url%)' },
+        ])
           resolve(this.formats)
         })
       })

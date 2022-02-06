@@ -33,6 +33,7 @@ export class CreateLink {
 
     var data = def.format.
       replace(/%url%/g, url).
+      replace(/%decoded_url%/g, decodeURIComponent(url)).
       replace(/%text%/g, text.replace(/\n/g, ' ')).
       replace(/%text_n%/g, text).
       replace(/%text_br%/g, text.replace(/\n/g, '<br />\n')).
@@ -70,7 +71,7 @@ export class CreateLink {
     }
     var text = info.selectionText || tab.title;
     var title = tab.title;
-
+    console.warn(def, url, text, title);
     return this.formatString(tab.id, def, url, text, title)
   }
 

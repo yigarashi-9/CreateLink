@@ -1,20 +1,6 @@
 
-import { Message, ResponseMessage, getSelectionText, getCurrentTab, sendMessageToTab } from './utils'
-import { ShortcutHandler } from './shortcut-handler'
+import { Message } from './utils'
 import { ContextMenuHandler } from './context-menu-handler'
-import fmt from './formats'
-
-type MessageResponder = ((response?: ResponseMessage) => void)
-
-class CreateLinkExtension {
-  async startup() {
-    (new ShortcutHandler()).initialize();
-  }
-}
-
-const app = new CreateLinkExtension()
-app.startup()
-
 
 chrome.runtime.onMessage.addListener(function (message: Message, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) {
   console.log({ message })

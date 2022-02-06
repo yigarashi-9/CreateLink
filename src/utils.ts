@@ -37,9 +37,6 @@ export function sendMessageToTab(tabId: number, message: Message): Promise<Respo
 export function showInputDialog(tabId: number): Promise<ResponseMessage> {
   return sendMessageToTab(tabId, { type: 'showInputDialog' })
 }
-export function getSelectionText(tabId: number): Promise<ResponseMessage> {
-  return sendMessageToTab(tabId, { type: 'selectedText' })
-}
 
 // This function does not work in service worker due to lack of ClipboardItem.
 // Need to run in content script.
