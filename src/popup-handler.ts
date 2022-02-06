@@ -6,14 +6,35 @@ interface ContextMenuItem {
 }
 
 export class PopupHandler {
-  initialize() {
-    this.initializeMenuItems()
-  }
+  private focusIndex: number | null = null;
 
-  async initializeMenuItems() {
-    document.addEventListener('click', this.onClick, false);
+  initialize() {
+    document.addEventListener('click', (ev) => this.onClick(ev), false);
+    document.addEventListener('keydown', (ev) => this.onKeydown(ev), false);
     const formats = fmt.getFormats()
     this.setupListItems(formats);
+  }
+
+  private onKeydown(ev: KeyboardEvent) {
+    if (ev.key === 'n' && ev.ctrlKey) {
+      if (this.focusIndex === null) {
+        this.focusIndex = 0;
+      } else {
+        this.focusIndex = (this.focusIndex + 1) % this.itemLength;
+      }
+      document.getElementById(`item${this.focusIndex}`)!.focus();
+    } else if ((ev.key === 'p' && ev.ctrlKey)) {
+      if (this.focusIndex === null) {
+        this.focusIndex = this.itemLength - 1;
+      } else {
+        this.focusIndex = (this.focusIndex - 1 + this.itemLength) % this.itemLength;
+      }
+      document.getElementById(`item${this.focusIndex}`)!.focus();
+    }
+  }
+  
+  get itemLength(): number {
+    return document.getElementById("formatlist").childElementCount;
   }
 
   createListElement(id: string, text: string) {

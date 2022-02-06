@@ -8,6 +8,7 @@ export class Format {
   
   constructor() {
       this.formats = [
+        { label: "Encoded Url", format: '%url%' },
         { label: "Decoded Url", format: '%decoded_url%' },
         { label: "Scrapbox", format: '[%text% %decoded_url%]' },
         { label: "Markdown", format: '[%text_md%](%url%)' },
