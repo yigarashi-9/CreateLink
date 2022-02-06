@@ -1,4 +1,3 @@
-import { getCurrentTab } from './utils'
 import fmt, { FormatDefinition } from './formats'
 import { CreateLink } from './createlink'
 
@@ -12,9 +11,7 @@ export class PopupHandler {
   }
 
   async initializeMenuItems() {
-    document.addEventListener('click', this.onClick.bind(this), false);
-
-    await fmt.load()
+    document.addEventListener('click', this.onClick, false);
     const formats = fmt.getFormats()
     this.setupListItems(formats);
   }
@@ -31,42 +28,33 @@ export class PopupHandler {
 
   setupListItems(formats: FormatDefinition[]) {
     var listParent = document.getElementById("formatlist");
-    var insertionPoint = document.getElementById("separator");
-    var n = 0;
+    let n = 0;
     formats.map((def) => {
       var id = "item" + n;
       var e = this.createListElement(id, def.label);
-      listParent.insertBefore(e, insertionPoint);
+      listParent.appendChild(e);
       n++;
     });
   }
 
-  onClick(ev: Event) {
-    getCurrentTab().then((tab: chrome.tabs.Tab) => {
-      if (ev.target === null) {
-        throw new Error("target is null")
-      }
-      const target = (ev.target as unknown) as ContextMenuItem
-      this.onMenuSelected(tab, target.id);
-    })
-  }
-
-  async onMenuSelected(tab: chrome.tabs.Tab, id: string) {
-    if (id == 'configure') {
-      chrome.tabs.create({ url: "options.html" });
-      window.close();
-    } else if (id == 'separator') {
-    } else if (id.match(/^item(\d+)$/)) {
-      var formatIndex = Number(RegExp.$1);
-
-      const def = fmt.format(formatIndex)
-      const cl = new CreateLink()
-      const link = await cl.formatInTab(def, {
-        selectionText: '',
-        pageUrl: tab.url,
-      }, tab)
-      await navigator.clipboard.writeText(link);
-      window.close();
+  async onClick(ev: Event) {
+    const w = await chrome.windows.getCurrent({
+      populate: true,
+      windowTypes: ["normal"],
+    });
+    const tab = w.tabs.find(t => t.active)
+    if (ev.target === null) {
+      throw new Error("target is null")
     }
+    const target = (ev.target as unknown) as ContextMenuItem
+    var formatIndex = parseInt(target.id.slice(-1));
+    const def = fmt.format(formatIndex)
+    const cl = new CreateLink()
+    const link = await cl.formatInTab(def, {
+      selectionText: '',
+      pageUrl: tab.url,
+    }, tab)
+    await navigator.clipboard.writeText(link);
+    window.close();
   }
 }

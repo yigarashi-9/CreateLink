@@ -8,10 +8,7 @@ module.exports = (env, argv) => {
   let config = {
     mode: argv.mode,
     entry: {
-      "service-worker": './src/service-worker.ts',
       "popup": './src/popup.ts',
-      "options": './src/options.ts',
-      "content": './src/content.ts',
     },
     module: {
       rules: [

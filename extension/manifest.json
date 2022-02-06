@@ -2,9 +2,6 @@
    "name": "Create Link",
    "version": "0.5.7",
    "manifest_version": 3,
-   "background": {
-     "service_worker": "js/service-worker.js"
-   },
    "action": {
       "default_icon": "icon64.png",
       "default_title": "Create Link",
@@ -17,15 +14,6 @@
       "32": "icon32.png",
       "64": "icon64.png"
    },
-   "options_page": "options.html",
-   "content_scripts" : [{
-     "matches"    : ["http://*/*", "https://*/*", "file:///*/*"],
-     "css"        : [],
-     "js"         : [
-       "js/content.js"
-     ],
-     "run_at"     : "document_start"
-   }],
    "commands": {
      "_execute_action": {
        "suggested_key": {
@@ -36,6 +24,5 @@
    "host_permissions": [
      "http://*/*",
      "https://*/*"
-   ],
-   "permissions": [ "contextMenus", "storage", "clipboardWrite" ]
+   ]
 }

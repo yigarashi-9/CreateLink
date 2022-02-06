@@ -1,5 +1,4 @@
 
-import {showInputDialog, sendMessageToTab, ResponseMessage} from './utils'
 import fmt, { FormatDefinition } from './formats'
 
 interface ClickContext {
@@ -15,23 +14,10 @@ export class CreateLink {
   constructor() {
   }
 
-  applyFilter(tabId: number, def: FormatDefinition, data: string): Promise<string> {
-    if (def.filter) {
-      var m = def.filter.match(/^s\/(.+?)\/(.*?)\/(\w*)$/);
-      if (m) {
-        var r = new RegExp(m[1], m[3]);
-        data = data.replace(r, m[2]);
-      } else {
-        return sendMessageToTab(tabId, { type: 'evaluateFilter', code: def.filter, string: data }).then( response => response.text )
-      }
-    }
-    return Promise.resolve(data);
-  }
-
-  formatLinkText(def: FormatDefinition, url: string, text: string, title: string, inputs: string[]): string {
+  formatLinkText(def: FormatDefinition, url: string, text: string, title: string): string {
     text = text || ''
 
-    var data = def.format.
+    return def.format.
       replace(/%url%/g, url).
       replace(/%decoded_url%/g, decodeURIComponent(url)).
       replace(/%text%/g, text.replace(/\n/g, ' ')).
@@ -44,22 +30,6 @@ export class CreateLink {
       replace(/\\t/g, '\t').
       replace(/\\n/g, '\n').
       replace(/\\r/g, '\r');
-
-    let index = 0
-    return data.replace(/%input%/g, (s) => {
-      return inputs[index++]
-    })
-  }
-
-  getInputs(def: FormatDefinition, tabId: number): Promise<string[]> {
-    const m = def.format.match(/%input%/g)
-    if (m) {
-      return Promise.all(m.map(() => {
-        return showInputDialog(tabId).then(response => response.text)
-      }))
-    } else {
-      return Promise.resolve([])
-    }
   }
 
   async formatInTab(def: FormatDefinition, info: ClickContext, tab: chrome.tabs.Tab): Promise<string> {
@@ -71,14 +41,11 @@ export class CreateLink {
     }
     var text = info.selectionText || tab.title;
     var title = tab.title;
-    console.warn(def, url, text, title);
     return this.formatString(tab.id, def, url, text, title)
   }
 
   async formatString(tabId: number, def: FormatDefinition, url: string, text: string, title: string): Promise<string> {
-    const inputs = await this.getInputs(def, tabId)
-    const linkText = this.formatLinkText(def, url, text, title, inputs)
-    return this.applyFilter(tabId, def, linkText)
+    return this.formatLinkText(def, url, text, title)
   }
 
   indexOfFormatByLabel(label: string): number {
@@ -92,10 +59,6 @@ export class CreateLink {
     // use plain text as default format.
     return 1;
   };
-
-  copyToClipboard(tabId: number, link: string): Promise<ResponseMessage> {
-    return sendMessageToTab(tabId, { type: 'copyToClipboard', link })
-  }
 }
 
 function escapeHTML(text: string): string {
