@@ -1,4 +1,3 @@
-
 import fmt, { FormatDefinition } from './formats'
 
 interface ClickContext {
@@ -19,7 +18,7 @@ export class CreateLink {
 
     return def.format.
       replace(/%url%/g, url).
-      replace(/%decoded_url%/g, decodeURIComponent(url)).
+      replace(/%decoded_url%/g, decodeURI(url)).
       replace(/%text%/g, text.replace(/\n/g, ' ')).
       replace(/%text_n%/g, text).
       replace(/%text_br%/g, text.replace(/\n/g, '<br />\n')).
