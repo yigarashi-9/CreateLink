@@ -6,7 +6,7 @@ interface ContextMenuItem {
 }
 
 export class PopupHandler {
-  private focusIndex: number | null = null;
+  private focusIndex: number = 0;
 
   initialize() {
     document.addEventListener('click', (ev) => this.onClick(ev), false);
@@ -17,22 +17,13 @@ export class PopupHandler {
 
   private onKeydown(ev: KeyboardEvent) {
     if (ev.key === 'n' && ev.ctrlKey) {
-      if (this.focusIndex === null) {
-        this.focusIndex = 0;
-      } else {
-        this.focusIndex = (this.focusIndex + 1) % this.itemLength;
-      }
-      document.getElementById(`item${this.focusIndex}`)!.focus();
+      this.focusIndex = (this.focusIndex + 1) % this.itemLength;
     } else if ((ev.key === 'p' && ev.ctrlKey)) {
-      if (this.focusIndex === null) {
-        this.focusIndex = this.itemLength - 1;
-      } else {
-        this.focusIndex = (this.focusIndex - 1 + this.itemLength) % this.itemLength;
-      }
-      document.getElementById(`item${this.focusIndex}`)!.focus();
+      this.focusIndex = (this.focusIndex - 1 + this.itemLength) % this.itemLength;
     }
+    document.getElementById(`item${this.focusIndex}`)!.focus();
   }
-  
+
   get itemLength(): number {
     return document.getElementById("formatlist").childElementCount;
   }
@@ -56,6 +47,7 @@ export class PopupHandler {
       listParent.appendChild(e);
       n++;
     });
+    document.getElementById(`item0`)!.focus();
   }
 
   async onClick(ev: Event) {
