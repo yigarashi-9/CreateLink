@@ -5,11 +5,11 @@ export interface FormatDefinition {
 
 export class Format {
   formats: FormatDefinition[]
-  
+
   constructor() {
       this.formats = [
+        { label: "Readable Url", format: '%decoded_url%' },
         { label: "Encoded Url", format: '%url%' },
-        { label: "Decoded Url", format: '%decoded_url%' },
         { label: "Scrapbox", format: '[%text% %decoded_url%]' },
         { label: "Markdown", format: '[%text_md%](%url%)' },
     ]
